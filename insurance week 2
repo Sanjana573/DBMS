@@ -65,6 +65,7 @@ insert into participated values('A05','KA041702',15,5000);
 select * from participated;
 select *from participated order by damage_amout desc;
 select avg(damage_amout) from participated;
-delete from participated where damage_amout<=18600;
+delete from participated 
+where damage_amout<(select t.amt from(select avg(damage_amout) as amt from participated)t);
 select name from person,participated where person.driver_id=participated.driver_id and participated.damage_amout>=18600;
 select max(damage_amout) from participated;
