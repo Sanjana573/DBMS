@@ -1,0 +1,108 @@
+create database 1bm21cs062_emp_id;
+use 1bm21cs062_emp_id;
+create table dept(
+d_no int,
+d_name varchar (10),
+d_loc varchar (30),
+primary key(d_no)
+);
+create table project(
+p_no int,
+p_loc varchar(20),
+p_name varchar(15),
+PRIMARY KEY(p_no)
+);
+create table employee(
+emp_no int,
+emp_name varchar(10),
+mgr_no int,
+hiredate date,
+sal real,
+d_no int,
+primary key(emp_no),
+foreign key(d_no) references dept(d_no)
+on update cascade on delete cascade
+);
+
+create table incentives(
+emp_no int,
+incentive_date date,
+incentive_amt real,
+primary key(incentive_date),
+foreign key(emp_no) references employee(emp_no)
+on update cascade on delete cascade
+);
+create table assigned(
+emp_no int,
+p_no int,
+job_role varchar(10),
+
+foreign key(emp_no) references employee(emp_no)
+on update cascade on delete cascade,
+foreign key(p_no) references project(p_no)
+on update cascade on delete cascade
+);
+select *from employee;
+select *from assigned;
+select *from incentives;
+select *from project;
+select *from dept;
+insert into  dept values(10,'IT','mysore');
+insert into  dept values(20,'Marketing','patna');
+insert into  dept values(30,'HR','delhi');
+insert into  dept values(40,'finance','panaji');
+insert into  dept values(50,'logistics','bangalore');
+insert into  dept values(60,'accounts','ahmedebad');
+insert into  dept values(70,'construct','hydrebad');
+insert into  project values(1,'mysore','0A1B1');
+insert into  project values(2,'patna','0A2B2');
+insert into  project values(3,'delhi','0A3B3');
+insert into  project values(4,'panaji','0A4B4');
+insert into project values(5,'bangalore','0A5B5');
+insert into project values(6,'ahmedebad','0A6B6');
+insert into project values(7,'hydrebad','0A7B7');
+insert into employee values(101,'sony',10,'2010-01-01',14000,10);
+insert into employee values(102,'toni',20,'2009-07-31',28000,20);
+insert into employee values(103,'rishi',30,'2015-02-24',30000,30);
+insert into employee values(104,'santhosh',40,'2018-09-08',94000,10);
+insert into employee values(105,'vineeth',50,'2009-05-18',11000,40);
+insert into employee values(106,'twinkle',60,'2002-12-25',30000,50);
+insert into employee values(107,'riddhi',70,'2010-03-01',10000,60);
+insert into employee values(108,'dhruv',80,'2012-03-05',70000,70);
+insert into employee values(109,'anirudh',90,'2016-06-06',20000,30);
+insert into employee values(110,'ansh',100,'2015-07-23',17000,70);
+insert into employee values(111,'kanan',110,'2018-08-11',29000,70);
+
+insert into incentives values(103,'2022-07-12',2500);
+insert into incentives values(104,'2021-03-29',3500);
+insert into incentives values(109,'2022-02-28',2000);
+insert into incentives values(110,'2021-12-21',6000);
+insert into incentives values(106,'2022-04-18',5000);
+insert into incentives values(107,'2022-06-11',2300);
+
+insert into assigned values(101,1,'manager');
+insert into assigned values(102,2,'assistant');
+insert into assigned values(103,3,'supervisor');
+insert into assigned values(104,1,'accountant');
+insert into assigned values(105,4,'clerk');
+insert into assigned values(106,7,'peon');
+insert into assigned values(107,5,'assistant');
+insert into assigned values(108,1,'technician');
+insert into assigned values(109,6,'engineer');
+insert into assigned values(110,5,'maid');
+insert into assigned values(111,6,'guard');
+select emp_no from assigned,project where assigned.p_no=project.p_no and project.p_loc in('mysore','bangalore','hydrebad');
+select emp_no from employee where emp_no not in(select incentives.emp_no
+from employee cross join incentives
+on employee.emp_no=incentives.emp_no);
+select e.emp_name,e.emp_no,d.d_name,a.job_role,d.d_loc,p.p_loc
+from employee e, dept d, assigned a, project p
+where d.d_no=e.d_no
+and e.emp_no=a.emp_no
+and a.p_no=p.p_no
+and p.p_loc=d.d_loc;
+select *from employee;
+select *from assigned;
+select *from incentives;
+select *from project;
+select *from dept;
