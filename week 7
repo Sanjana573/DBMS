@@ -67,7 +67,7 @@ select p_name from parts where p_id not in
 
 
 
-select a.p_id ,a.s_id from clog a where cost>(select avg(b.cost) from clog b where b.p_id=a.p_id group by b.p_id);
+select a.a.s_id from clog a where cost>(select avg(b.cost) from clog b where b.p_id=a.p_id group by b.p_id);
 
 
 
