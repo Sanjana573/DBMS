@@ -1,0 +1,89 @@
+create database supplier_062;
+use supplier_062;
+create table supplier(
+s_id varchar(20),
+s_name varchar(20),
+city varchar(20),
+primary key(s_id)
+);
+ 
+DESC supplier;
+
+create table parts(
+p_id varchar(20),
+p_name varchar(20),
+color varchar(20),
+primary key(p_id)
+
+);
+
+create table clog(
+s_id varchar(20),
+p_id varchar(20),
+cost varchar(20),
+primary key(s_id,p_id),
+foreign key(p_id)references parts(p_id),
+foreign key(s_id)references supplier(s_id)
+
+);
+insert into supplier values(10001,'acme widget','bangalore');
+insert into supplier values(10002,'johns','kolkata');
+insert into supplier values(10003,'vimal','mumbai');
+insert into supplier values(10004,'reliance','delhi');
+
+insert into parts values(20001,'book','red');
+insert into parts values(20002,'pen','red');
+insert into parts values(20003,'pencil','green');
+insert into parts values(20004,'mobile','green');
+insert into parts values(20005,'charger','black');
+
+insert into clog values(10001,20001,10);
+insert into clog values(10001,20002,10);
+insert into clog values(10001,20003,30);
+insert into clog values(10001,20004,10);
+insert into clog values(10001,20005,10);
+insert into clog values(10002,20001,10);
+insert into clog values(10002,20002,20);
+insert into clog values(10003,20003,30);
+insert into clog values(10004,20003,40);
+
+select p_name from parts where p_id IN (select p_id from clog);
+
+select s_name from
+(select c.s_name,count(distinct a.p_id) as counts from clog a
+left join parts b on a.p_id=b.p_id
+left join supplier c on c.s_id=a.s_id group by 1) a
+where counts=(select count(distinct a.p_id) from clog a
+left join parts b on a.p_id=b.p_id);
+
+
+
+select distinct s_name from
+(select c.s_name,b.p_name,b.color from clog a
+left join parts b on a.p_id=b.p_id
+left join supplier c on c.s_id=a.s_id )a
+where color='red';
+
+select p_id,s_name from
+(select A.p_id,C.s_name,cost,rank() over(partition by p_id order by cost desc) as ranks from parts A
+left join clog B on A.p_id=B.p_id
+left join supplier C on B.s_id=C.s_id)A where ranks=1 and cost is not null order by s_name;
+
+select a.s_id from
+(select A.p_id,C.s_id,cost from parts A
+left join clog B on A.p_id=B.p_id
+left join supplier C on B.s_id=C.s_id )A
+left join
+(select A.p_id,avg(cost) as cost from parts A
+left join clog B on A.p_id=B.p_id
+left join supplier C on B.s_id=C.s_id where cost is not null group by 1 )B on A.p_id=B.p_id
+where a.cost>b.cost;
+
+
+select A.p_name from parts A
+left join clog B on A.p_id=B.p_id
+left join supplier C on B.s_id=C.s_id where lower(c.s_name)='acme widget'
+and a.p_name not in (select A.p_name from parts A
+left join clog B on A.p_id=B.p_id
+left join supplier C on B.s_id=C.s_id where lower(c.s_name)<>'acme widget')
+;
